@@ -29,28 +29,9 @@ jobs:
 
       - name: Build with Gradle
         run: |
-          [ $(du -s ~/.gradle/wrapper | awk '{ print $1 }') -gt 250000 ] && rm -rf ~/.gradle/wrapper/* || true
           echo 'org.gradle.parallel=true' >> gradle.properties
           echo 'org.gradle.vfs.watch=true' >> gradle.properties
           ./gradlew :app:synthesizeDistReleaseApksCI
-          echo "APK_FILE_ARM32=$(find app/build/outputs/ci -name '*arm32.apk')" >> $GITHUB_ENV
-          echo "APK_FILE_ARM64=$(find app/build/outputs/ci -name '*arm64.apk')" >> $GITHUB_ENV
-          echo "APK_FILE_ARMALL=$(find app/build/outputs/ci -name '*armAll.apk')" >> $GITHUB_ENV
-          echo "APK_FILE_UNIVERSAL=$(find app/build/outputs/ci -name '*universal.apk')" >> $GITHUB_ENV
-
-      - name: Show Artifacts MD5
-        run: |
-          echo "### Build Success :rocket:" >> $GITHUB_STEP_SUMMARY
-          echo "|ABI|MD5|" >> $GITHUB_STEP_SUMMARY
-          echo "|:--------:|:----------|" >> $GITHUB_STEP_SUMMARY
-          arm32=($(md5sum ${{ env.APK_FILE_ARM32 }}))
-          echo "|arm32|$arm32" >> $GITHUB_STEP_SUMMARY
-          arm64=($(md5sum ${{ env.APK_FILE_ARM64 }}))
-          echo "|arm64|$arm64" >> $GITHUB_STEP_SUMMARY
-          armAll=($(md5sum ${{ env.APK_FILE_ARMALL }}))
-          echo "|armAll|$armAll" >> $GITHUB_STEP_SUMMARY
-          universal=($(md5sum ${{ env.APK_FILE_UNIVERSAL }}))
-          echo "|universal|$universal" >> $GITHUB_STEP_SUMMARY
 
       - name: Upload Artifacts(arm32)
         uses: actions/upload-artifact@v2
